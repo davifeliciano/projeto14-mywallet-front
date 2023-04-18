@@ -1,0 +1,1 @@
+{"name":"MyWallet","short_name":"MyWallet","description":"Um CRUD para controle de despesas","icons":[{"src":"/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}],"author":"Davi Feliciano","theme_color":"#8C11BE","background_color":"#8C11BE","display":"standalone"}
