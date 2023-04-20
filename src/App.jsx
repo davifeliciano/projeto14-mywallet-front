@@ -3,8 +3,10 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import Login, { action as loginAction } from "./routes/Login";
 import Cadastro, { action as cadastroAction } from "./routes/Cadastro";
+import Home, { loader as homeLoader } from "./routes/Home";
 import GlobalStyle from "./styles/GlobalStyle";
 import SessionContext from "./contexts/SessionContext";
+import RecordsContext from "./contexts/RecordsContext";
 
 const router = createBrowserRouter([
   {
@@ -19,18 +21,27 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     action: cadastroAction,
   },
+  {
+    path: "/home",
+    element: <Home />,
+    errorElement: <ErrorPage />,
+    loader: homeLoader,
+  },
 ]);
 
 export default function App() {
   const [session, setSession] = useState(
     JSON.parse(localStorage.getItem("session"))
   );
+  const [records, setRecords] = useState([]);
 
   return (
     <>
       <GlobalStyle />
       <SessionContext.Provider value={{ session, setSession }}>
-        <RouterProvider router={router} />
+        <RecordsContext.Provider value={{ records, setRecords }}>
+          <RouterProvider router={router} />
+        </RecordsContext.Provider>
       </SessionContext.Provider>
     </>
   );
