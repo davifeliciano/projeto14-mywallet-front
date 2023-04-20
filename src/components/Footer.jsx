@@ -1,17 +1,18 @@
 import styled from "styled-components";
 import { SlPlus, SlMinus } from "react-icons/sl";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
     <FooterContainer>
-      <FooterButton>
+      <FooterLink to="/nova-transacao/entrada">
         <SlPlus />
         Nova entrada
-      </FooterButton>
-      <FooterButton>
+      </FooterLink>
+      <FooterLink to="/nova-transacao/saida">
         <SlMinus />
         Nova saída
-      </FooterButton>
+      </FooterLink>
     </FooterContainer>
   );
 }
@@ -22,7 +23,7 @@ const FooterContainer = styled.footer`
   min-height: 12rem;
 `;
 
-const FooterButton = styled.button`
+const FooterLink = styled(Link)`
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -34,7 +35,10 @@ const FooterButton = styled.button`
   border-radius: 5px;
   font-size: 1.7rem;
   font-weight: 700;
-  color: white;
+
+  && {
+    color: white;
+  }
 
   &:active {
     background-color: rgb(163, 40, 214, 0.7);
