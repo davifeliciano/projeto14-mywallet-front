@@ -36,6 +36,7 @@ export async function action({ request }) {
 export default function Cadastro() {
   const navigation = useNavigation();
   const [form, setForm] = useState({
+    nome: "",
     email: "",
     password: "",
     passwordConfirm: "",
@@ -47,6 +48,15 @@ export default function Cadastro() {
       <FormContainer>
         <h1>MyWallet</h1>
         <Form method="post">
+          <Input
+            required
+            type="text"
+            name="nome"
+            placeholder="nome"
+            disabled={navigation.state === "submitting"}
+            value={form.nome}
+            onChange={(e) => setForm({ ...form, nome: e.target.value })}
+          />
           <Input
             required
             type="email"
@@ -71,7 +81,7 @@ export default function Cadastro() {
             minLength={8}
             type="password"
             name="passwordConfirm"
-            placeholder="senha"
+            placeholder="confirme a senha"
             disabled={navigation.state === "submitting"}
             value={form.passwordConfirm}
             onChange={(e) =>
