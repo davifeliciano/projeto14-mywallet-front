@@ -1,7 +1,8 @@
+import axios from "axios";
 import { useState } from "react";
-import { Link, useNavigation } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Link, redirect, useNavigation } from "react-router-dom";
+import { toast } from "react-toastify";
+import Toast from "../components/Toast";
 import FormContainer from "../components/FormContainer";
 import Form from "../components/Form";
 import Input from "../components/Input";
@@ -9,34 +10,44 @@ import SubmitButton from "../components/SubmitButton";
 import SubmitLoader from "../components/SubmitLoader";
 
 export async function action({ request }) {
-  // Simulando uma requisição POST à API
   const formData = await request.formData();
-  const { email, password, passwordConfirm } = Object.fromEntries(formData);
+  const { name, email, password, passwordConfirm } =
+    Object.fromEntries(formData);
 
   if (password !== passwordConfirm) {
-    toast("As senhas não correspondem! Tente novamente.", {
-      position: toast.POSITION.TOP_CENTER,
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+    toast("As senhas não correspondem! Tente novamente.");
     return null;
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log({ email, password });
-  // Erro para teste da ErrorPage
-  throw new Error("Mensagem de erro de teste");
+  try {
+    await axios.post("/auth/sign-up", { name, email, password });
+    return redirect("/?reason=newuser");
+  } catch (err) {
+    switch (err.response.status) {
+      case 422:
+        toast(
+          "Formato inválido. Verifique se o email é válido e se a senha tem 8 caracteres ou mais. Todos os campos são obrigatórios."
+        );
+        break;
+
+      case 409:
+        toast("Já existe um usuário com esse email.");
+        break;
+
+      default:
+        console.error(err);
+        toast("Ocorreu um erro inesperado. Tente novamente.");
+        break;
+    }
+
+    return null;
+  }
 }
 
 export default function Cadastro() {
   const navigation = useNavigation();
   const [form, setForm] = useState({
-    nome: "",
+    name: "",
     email: "",
     password: "",
     passwordConfirm: "",
@@ -44,21 +55,19 @@ export default function Cadastro() {
 
   return (
     <>
-      <ToastContainer />
+      <Toast />
       <FormContainer>
         <h1>MyWallet</h1>
         <Form method="post">
           <Input
-            required
             type="text"
-            name="nome"
-            placeholder="nome"
+            name="name"
+            placeholder="name"
             disabled={navigation.state === "submitting"}
-            value={form.nome}
-            onChange={(e) => setForm({ ...form, nome: e.target.value })}
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <Input
-            required
             type="email"
             name="email"
             placeholder="email"
@@ -67,8 +76,6 @@ export default function Cadastro() {
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
           <Input
-            required
-            minLength={8}
             type="password"
             name="password"
             placeholder="senha"
@@ -77,8 +84,6 @@ export default function Cadastro() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
           <Input
-            required
-            minLength={8}
             type="password"
             name="passwordConfirm"
             placeholder="confirme a senha"

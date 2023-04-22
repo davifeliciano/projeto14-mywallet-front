@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { FiLogOut } from "react-icons/fi";
 import SessionContext from "../contexts/SessionContext";
 import { useNavigate } from "react-router-dom";
+import { removeSession } from "../utils/sessionUtils";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -10,13 +11,13 @@ export default function Header() {
 
   function logout() {
     setSession(null);
-    localStorage.removeItem("session");
+    removeSession();
     navigate("/");
   }
 
   return (
     <HeaderContainer>
-      <h1>{session && `Olá, ${session.nome}`}</h1>
+      <h1>{session && `Olá, ${session.name}`}</h1>
       <button onClick={logout}>
         <FiLogOut />
       </button>

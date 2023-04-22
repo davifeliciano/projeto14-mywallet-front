@@ -11,10 +11,6 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
   }
 
-  :root {
-    --toastify-color-progress-light: #a328d6;
-  }
-
   img,
   picture,
   video,

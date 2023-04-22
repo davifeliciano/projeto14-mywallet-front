@@ -16,7 +16,6 @@ export default function RecordForm({
     <Form method="post">
       <MaskedInput amount={amount} setAmount={setAmount} disabled={disabled} />
       <Input
-        required
         type="text"
         name="description"
         placeholder="descrição"

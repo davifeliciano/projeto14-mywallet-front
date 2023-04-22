@@ -1,33 +1,62 @@
+import axios from "axios";
 import styled from "styled-components";
 import { useContext, useEffect, useState } from "react";
 import { redirect, useNavigate, useNavigation } from "react-router-dom";
+import { toast } from "react-toastify";
 import SessionContext from "../contexts/SessionContext";
+import { getToken } from "../utils/sessionUtils";
+import Toast from "../components/Toast";
 import RecordFormContainer from "../components/RecordFormContainer";
 import RecordForm from "../components/RecordForm";
 
-async function getFormDataObject(request) {
-  const formData = await request.formData();
-  return Object.fromEntries(formData);
+function parseAmount(amount) {
+  return parseFloat(
+    amount.replace("R$ ", "").replace(".", "").replace(",", ".")
+  );
 }
 
-function parseAmount(amount) {
-  return parseFloat(amount.replace("R$ ", "").replace(",", "."));
+async function action(request, type) {
+  const formData = await request.formData();
+  const { description, amount } = Object.fromEntries(formData);
+  const parsedAmount = parseAmount(amount);
+  const availableFactors = { credit: 1, debit: -1 };
+  const factor = availableFactors[type];
+  const token = getToken();
+  const config = { headers: { authorization: `Bearer ${token}` } };
+
+  try {
+    await axios.post(
+      "/transactions",
+      { description, amount: factor * parsedAmount },
+      config
+    );
+    return redirect("/home");
+  } catch (err) {
+    switch (err.response.status) {
+      case 422:
+        toast("Formato inválido. Todos os campos são obrigatórios.");
+        break;
+
+      case 401:
+        throw err;
+        break;
+
+      default:
+        console.error(err);
+        toast("Ocorreu um erro inesperado. Tente novamente.");
+        break;
+    }
+
+    return null;
+  }
 }
 
 export async function creditAction({ request }) {
-  const { amount, description } = await getFormDataObject(request);
-  const parsedAmount = parseAmount(amount);
-  const body = { amount: parsedAmount, description };
-  console.table(body);
-  return redirect("/home");
+  return action(request, "credit");
 }
 
 export async function debitAction({ request }) {
-  const { amount, description } = await getFormDataObject(request);
-  const parsedAmount = -parseAmount(amount);
-  const body = { amount: parsedAmount, description };
-  console.table(body);
-  return redirect("/home");
+  return action(request, "debit");
 }
 
 export default function NewRecord({ type }) {
@@ -38,28 +67,33 @@ export default function NewRecord({ type }) {
   const [description, setDescription] = useState("");
   const isLoading =
     navigation.state === "submitting" || navigation.state === "loading";
-  const typeText = type === "saida" ? "saída" : type;
+
+  const availableTypeTexts = { credit: "entrada", debt: "saída" };
+  const typeText = availableTypeTexts[type];
 
   useEffect(() => {
-    if (!session) navigate("/");
-  }, [session]);
+    if (!session) navigate("/?reason=denied");
+  }, []);
 
   return (
-    <Container>
-      <RecordFormContainer>
-        <div>
-          <h1>Nova {typeText}</h1>
-        </div>
-        <RecordForm
-          amount={amount}
-          setAmount={setAmount}
-          description={description}
-          setDescription={setDescription}
-          submitButtonText={`Salvar ${typeText}`}
-          disabled={isLoading}
-        />
-      </RecordFormContainer>
-    </Container>
+    <>
+      <Toast />
+      <Container>
+        <RecordFormContainer>
+          <div>
+            <h1>Nova {typeText}</h1>
+          </div>
+          <RecordForm
+            amount={amount}
+            setAmount={setAmount}
+            description={description}
+            setDescription={setDescription}
+            submitButtonText={`Salvar ${typeText}`}
+            disabled={isLoading}
+          />
+        </RecordFormContainer>
+      </Container>
+    </>
   );
 }
 

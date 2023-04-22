@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
@@ -8,6 +9,8 @@ import NewRecord, { creditAction, debitAction } from "./routes/NewRecord";
 import GlobalStyle from "./styles/GlobalStyle";
 import SessionContext from "./contexts/SessionContext";
 import RecordsContext from "./contexts/RecordsContext";
+
+axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
 const router = createBrowserRouter([
   {
@@ -30,13 +33,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/nova-transacao/entrada",
-    element: <NewRecord type="entrada" />,
+    element: <NewRecord type="credit" />,
     errorElement: <ErrorPage />,
     action: creditAction,
   },
   {
     path: "/nova-transacao/saida",
-    element: <NewRecord type="saida" />,
+    element: <NewRecord type="debt" />,
     errorElement: <ErrorPage />,
     action: debitAction,
   },
