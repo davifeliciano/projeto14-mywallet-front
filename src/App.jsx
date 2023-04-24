@@ -7,6 +7,7 @@ import Cadastro, { action as cadastroAction } from "./routes/Cadastro";
 import Home, { loader as homeLoader } from "./routes/Home";
 import NewRecord, { creditAction, debitAction } from "./routes/NewRecord";
 import GlobalStyle from "./styles/GlobalStyle";
+import { getSession } from "./utils/sessionUtils";
 import SessionContext from "./contexts/SessionContext";
 import RecordsContext from "./contexts/RecordsContext";
 
@@ -46,9 +47,7 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  const [session, setSession] = useState(
-    JSON.parse(localStorage.getItem("session"))
-  );
+  const [session, setSession] = useState(getSession());
   const [records, setRecords] = useState([]);
 
   return (
