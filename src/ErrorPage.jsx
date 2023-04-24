@@ -10,7 +10,7 @@ export default function ErrorPage() {
   const error = useRouteError();
 
   useEffect(() => {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       setSession(null);
       removeSession();
       navigate("/?reason=expired");
