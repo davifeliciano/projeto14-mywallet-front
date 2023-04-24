@@ -19,15 +19,13 @@ async function action(request, type) {
   const formData = await request.formData();
   const { description, amount } = Object.fromEntries(formData);
   const parsedAmount = parseAmount(amount);
-  const availableFactors = { credit: 1, debit: -1 };
-  const factor = availableFactors[type];
   const token = getToken();
   const config = { headers: { authorization: `Bearer ${token}` } };
 
   try {
     await axios.post(
       "/transactions",
-      { description, amount: factor * parsedAmount },
+      { description, amount: parsedAmount, type },
       config
     );
     return redirect("/home");

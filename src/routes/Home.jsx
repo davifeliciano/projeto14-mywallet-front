@@ -50,12 +50,13 @@ export default function Home() {
                 const [records, sum] = recordsAndSum;
                 return records.data
                   .toReversed()
-                  .map((record, index) => (
+                  .map((record) => (
                     <Record
-                      key={index}
+                      key={record._id}
                       date={record.createdAt}
                       description={record.description}
                       amount={record.amount}
+                      type={record.type}
                     />
                   ));
               }}

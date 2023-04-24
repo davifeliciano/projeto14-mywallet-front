@@ -2,12 +2,12 @@ import dayjs from "dayjs";
 import styled from "styled-components";
 import brlFormater from "../utils/brlFormater";
 
-export default function Record({ date, description, amount }) {
+export default function Record({ date, description, amount, type }) {
   return (
     <Container>
       <RecordDate>{dayjs(date).format("DD/MM")}</RecordDate>
       <RecordDescription>{description}</RecordDescription>
-      <RecordAmount amount={amount}>{brlFormater.format(amount)}</RecordAmount>
+      <RecordAmount type={type}>{brlFormater.format(amount)}</RecordAmount>
     </Container>
   );
 }
@@ -27,5 +27,10 @@ const RecordDescription = styled.span`
 `;
 
 const RecordAmount = styled.span`
-  color: ${(props) => (props.amount >= 0 ? "#03ac00" : "#c70000")};
+  color: ${(props) =>
+    props.type === "credit"
+      ? "#03ac00"
+      : props.type === "debit"
+      ? "#c70000"
+      : ""};
 `;
