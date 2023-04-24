@@ -5,7 +5,6 @@ import SessionContext from "../contexts/SessionContext";
 import PageContainer from "../components/PageContainer";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import RecordsContext from "../contexts/RecordsContext";
 import { getToken } from "../utils/sessionUtils";
 import PageContent from "../components/PageContent";
 import RecordsContainer from "../components/RecordsContainer";
@@ -29,12 +28,10 @@ export default function Home() {
   const navigate = useNavigate();
   const loaderData = useLoaderData();
   const { session } = useContext(SessionContext);
-  const { setRecords } = useContext(RecordsContext);
 
   useEffect(() => {
     if (!session) navigate("/?reason=denied");
-    if (loaderData) setRecords(loaderData);
-  }, [loaderData]);
+  }, []);
 
   return (
     <PageContainer>

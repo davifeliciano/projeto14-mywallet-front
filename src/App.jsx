@@ -9,7 +9,6 @@ import NewRecord, { creditAction, debitAction } from "./routes/NewRecord";
 import GlobalStyle from "./styles/GlobalStyle";
 import { getSession } from "./utils/sessionUtils";
 import SessionContext from "./contexts/SessionContext";
-import RecordsContext from "./contexts/RecordsContext";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -48,15 +47,12 @@ const router = createBrowserRouter([
 
 export default function App() {
   const [session, setSession] = useState(getSession());
-  const [records, setRecords] = useState([]);
 
   return (
     <>
       <GlobalStyle />
       <SessionContext.Provider value={{ session, setSession }}>
-        <RecordsContext.Provider value={{ records, setRecords }}>
-          <RouterProvider router={router} />
-        </RecordsContext.Provider>
+        <RouterProvider router={router} />
       </SessionContext.Provider>
     </>
   );
