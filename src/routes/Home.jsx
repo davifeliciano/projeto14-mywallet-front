@@ -8,12 +8,12 @@ import Footer from "../components/Footer";
 import { getToken } from "../utils/sessionUtils";
 import PageContent from "../components/PageContent";
 import RecordsContainer from "../components/RecordsContainer";
+import RecordsMessage from "../components/RecordsMessage";
 import Record from "../components/Record";
 import SkeletonRecords from "../components/SkeletonRecords";
 import Total from "../components/Total";
 import SkeletonTotal from "../components/SkeletonTotal";
 import RecordsError from "../components/RecordsError";
-import TotalError from "../components/TotalError";
 
 export async function loader() {
   const token = getToken();
@@ -45,30 +45,33 @@ export default function Home() {
             >
               {(recordsAndSum) => {
                 const [records, sum] = recordsAndSum;
-                return records.data
-                  .toReversed()
-                  .map((record) => (
-                    <Record
-                      key={record._id}
-                      date={record.createdAt}
-                      description={record.description}
-                      amount={record.amount}
-                      type={record.type}
-                    />
-                  ));
+
+                return records.data.length !== 0 ? (
+                  records.data
+                    .toReversed()
+                    .map((record) => (
+                      <Record
+                        key={record._id}
+                        date={record.createdAt}
+                        description={record.description}
+                        amount={record.amount}
+                        type={record.type}
+                      />
+                    ))
+                ) : (
+                  <RecordsMessage message="Nada aqui! Cadastre seus ganhos e gastos abaixo." />
+                );
               }}
             </Await>
           </Suspense>
         </RecordsContainer>
         <Suspense fallback={<SkeletonTotal />}>
-          <Await
-            resolve={loaderData.recordsAndSum}
-            errorElement={<TotalError />}
-          >
+          <Await resolve={loaderData.recordsAndSum} errorElement={null}>
             {(recordsAndSum) => {
               const [records, sum] = recordsAndSum;
               const { total } = sum.data;
-              return <Total amount={total} />;
+
+              return records.data.length !== 0 && <Total amount={total} />;
             }}
           </Await>
         </Suspense>
