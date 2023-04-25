@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { toast } from "react-toastify";
 import SessionContext from "../contexts/SessionContext";
+import signInSchema from "../schemas/signInSchema";
 import { storeSession } from "../utils/sessionUtils";
 import Toast from "../components/Toast";
 import FormContainer from "../components/FormContainer";
@@ -19,7 +20,17 @@ import SubmitLoader from "../components/SubmitLoader";
 
 export async function action({ request }) {
   const formData = await request.formData();
-  const body = Object.fromEntries(formData);
+  const form = Object.fromEntries(formData);
+  const { error, value } = signInSchema.validate(form);
+
+  if (error) {
+    toast(
+      "Formato inválido. Verifique se o email é válido e se a senha tem 8 caracteres ou mais. Todos os campos são obrigatórios."
+    );
+    return null;
+  }
+
+  const body = value;
 
   try {
     const { data } = await axios.post("/auth/sign-in", body);
@@ -103,8 +114,6 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
-            required
-            minLength={8}
             type="password"
             name="password"
             placeholder="senha"

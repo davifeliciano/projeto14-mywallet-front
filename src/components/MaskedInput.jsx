@@ -12,7 +12,12 @@ export default function MaskedInput({ amount, setAmount, disabled }) {
       onChange={(e) => setAmount(e.target.value)}
       disabled={disabled}
     >
-      <Input type="text" name="amount" placeholder="valor" />
+      <Input
+        type="text"
+        name="amount"
+        inputMode="numeric"
+        placeholder="valor"
+      />
     </ReactInputMask>
   );
 }

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { toast } from "react-toastify";
 import SessionContext from "../contexts/SessionContext";
+import recordSchema from "../schemas/recordSchema";
 import parseAmount from "../utils/parseAmount";
 import { getToken } from "../utils/sessionUtils";
 import Toast from "../components/Toast";
@@ -16,9 +17,17 @@ import RecordFormContainer from "../components/RecordFormContainer";
 import RecordForm from "../components/RecordForm";
 
 export async function action({ params, request }) {
-  const formData = await request.formData();
-  const { description, amount } = Object.fromEntries(formData);
   const { id } = params;
+  const formData = await request.formData();
+  const form = Object.fromEntries(formData);
+  const { error, value } = recordSchema.validate(form);
+
+  if (error) {
+    toast("Formato inválido. Todos os campos são obrigatórios.");
+    return null;
+  }
+
+  const { amount, description } = value;
   const parsedAmount = parseAmount(amount);
   const token = getToken();
   const config = { headers: { authorization: `Bearer ${token}` } };

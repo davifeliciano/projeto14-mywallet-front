@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, redirect, useNavigation } from "react-router-dom";
 import { toast } from "react-toastify";
+import signUpSchema from "../schemas/signUpSchema";
 import Toast from "../components/Toast";
 import FormContainer from "../components/FormContainer";
 import Form from "../components/Form";
@@ -11,8 +12,17 @@ import SubmitLoader from "../components/SubmitLoader";
 
 export async function action({ request }) {
   const formData = await request.formData();
-  const { name, email, password, passwordConfirm } =
-    Object.fromEntries(formData);
+  const form = Object.fromEntries(formData);
+  const { error, value } = signUpSchema.validate(form);
+
+  if (error) {
+    toast(
+      "Formato inválido. Verifique se o email é válido e se a senha tem 8 caracteres ou mais. Todos os campos são obrigatórios."
+    );
+    return null;
+  }
+
+  const { name, email, password, passwordConfirm } = value;
 
   if (password !== passwordConfirm) {
     toast("As senhas não correspondem! Tente novamente.");
