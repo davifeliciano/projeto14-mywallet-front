@@ -1,19 +1,42 @@
 import dayjs from "dayjs";
 import styled from "styled-components";
+import { Form, Link } from "react-router-dom";
+import { AiOutlineDelete } from "react-icons/ai";
 import brlFormater from "../utils/brlFormater";
 
-export default function Record({ date, description, amount, type }) {
+export default function Record({ id, date, description, amount, type }) {
+  const formattedAmount = brlFormater.format(amount);
   return (
     <Container>
       <RecordDate>{dayjs(date).format("DD/MM")}</RecordDate>
-      <RecordDescription>{description}</RecordDescription>
-      <RecordAmount type={type}>{brlFormater.format(amount)}</RecordAmount>
+      <RecordDescription>
+        <Link
+          to={`/transacao/${id}`}
+          state={{ description, amount: formattedAmount, type }}
+        >
+          {description}
+        </Link>
+      </RecordDescription>
+      <RecordAmount type={type}>{formattedAmount}</RecordAmount>
+      <Form
+        method="post"
+        action={`/transacao/${id}/deletar`}
+        onSubmit={(e) =>
+          !window.confirm("Tem certeza que deseja excluir esse registro?") &&
+          e.preventDefault()
+        }
+      >
+        <DeleteButton type="submit">
+          <AiOutlineDelete />
+        </DeleteButton>
+      </Form>
     </Container>
   );
 }
 
 const Container = styled.div`
   display: flex;
+  align-items: center;
   gap: 1rem;
   font-size: 1.6rem;
 `;
@@ -33,4 +56,16 @@ const RecordAmount = styled.span`
       : props.type === "debit"
       ? "#c70000"
       : ""};
+`;
+
+const DeleteButton = styled.button`
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: transparent;
+  border: none;
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
 `;

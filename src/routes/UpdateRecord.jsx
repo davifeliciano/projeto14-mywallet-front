@@ -1,7 +1,12 @@
 import axios from "axios";
 import styled from "styled-components";
 import { useContext, useEffect, useState } from "react";
-import { redirect, useNavigate, useNavigation } from "react-router-dom";
+import {
+  redirect,
+  useLocation,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
 import { toast } from "react-toastify";
 import SessionContext from "../contexts/SessionContext";
 import parseAmount from "../utils/parseAmount";
@@ -10,17 +15,18 @@ import Toast from "../components/Toast";
 import RecordFormContainer from "../components/RecordFormContainer";
 import RecordForm from "../components/RecordForm";
 
-async function action(request, type) {
+export async function action({ params, request }) {
   const formData = await request.formData();
   const { description, amount } = Object.fromEntries(formData);
+  const { id } = params;
   const parsedAmount = parseAmount(amount);
   const token = getToken();
   const config = { headers: { authorization: `Bearer ${token}` } };
 
   try {
-    await axios.post(
-      "/transactions",
-      { description, amount: parsedAmount, type },
+    await axios.patch(
+      `/transactions/${id}`,
+      { description, amount: parsedAmount },
       config
     );
     return redirect("/home");
@@ -44,25 +50,18 @@ async function action(request, type) {
   }
 }
 
-export async function creditAction({ request }) {
-  return action(request, "credit");
-}
-
-export async function debitAction({ request }) {
-  return action(request, "debit");
-}
-
-export default function NewRecord({ type }) {
+export default function UpdateRecord() {
   const navigate = useNavigate();
   const navigation = useNavigation();
+  const location = useLocation();
   const { session } = useContext(SessionContext);
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState(location.state?.amount);
+  const [description, setDescription] = useState(location.state?.description);
   const isLoading =
     navigation.state === "submitting" || navigation.state === "loading";
 
   const availableTypeTexts = { credit: "entrada", debit: "saída" };
-  const typeText = availableTypeTexts[type];
+  const typeText = availableTypeTexts[location.state?.type];
 
   useEffect(() => {
     if (!session) navigate("/?reason=denied");
@@ -74,7 +73,7 @@ export default function NewRecord({ type }) {
       <Container>
         <RecordFormContainer>
           <div>
-            <h1>Nova {typeText}</h1>
+            <h1>Editar {typeText}</h1>
           </div>
           <RecordForm
             amount={amount}

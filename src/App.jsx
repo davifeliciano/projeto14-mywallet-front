@@ -6,9 +6,12 @@ import Login, { action as loginAction } from "./routes/Login";
 import Cadastro, { action as cadastroAction } from "./routes/Cadastro";
 import Home, { loader as homeLoader } from "./routes/Home";
 import NewRecord, { creditAction, debitAction } from "./routes/NewRecord";
+import { action as deleteAction } from "./routes/DeleteRecord";
+import { action as updateAction } from "./routes/UpdateRecord";
 import GlobalStyle from "./styles/GlobalStyle";
 import { getSession } from "./utils/sessionUtils";
 import SessionContext from "./contexts/SessionContext";
+import UpdateRecord from "./routes/UpdateRecord";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -39,9 +42,21 @@ const router = createBrowserRouter([
   },
   {
     path: "/nova-transacao/saida",
-    element: <NewRecord type="debt" />,
+    element: <NewRecord type="debit" />,
     errorElement: <ErrorPage />,
     action: debitAction,
+  },
+  {
+    path: "/transacao/:id",
+    element: <UpdateRecord />,
+    action: updateAction,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/transacao/:id/deletar",
+        action: deleteAction,
+      },
+    ],
   },
 ]);
 

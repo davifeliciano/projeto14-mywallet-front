@@ -52,6 +52,7 @@ export default function Home() {
                     .map((record) => (
                       <Record
                         key={record._id}
+                        id={record._id}
                         date={record.createdAt}
                         description={record.description}
                         amount={record.amount}

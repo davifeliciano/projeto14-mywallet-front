@@ -3,12 +3,12 @@ import styled from "styled-components";
 const RecordsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 5px;
   flex-grow: 1;
   overflow-y: scroll;
 
   & > *:first-child {
-    margin-top: 1rem;
+    margin-top: 5px;
   }
 
   &::-webkit-scrollbar {
